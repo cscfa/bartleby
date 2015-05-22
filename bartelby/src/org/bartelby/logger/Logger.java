@@ -21,6 +21,7 @@ public class Logger{
 	protected org.slf4j.Logger logger = null;
 
 	public Logger() throws NotDirectoryException, FileNotFoundException, DirectoryNotFoundException, NotFileException, JoranException{
+		super();
 		this.logger = (org.slf4j.Logger) LoggerFactory.getLogger(Logger.class);
 		this.init();
 	}

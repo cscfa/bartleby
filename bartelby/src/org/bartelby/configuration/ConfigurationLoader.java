@@ -6,12 +6,10 @@ package org.bartelby.configuration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bartelby.exception.DirectoryNotFoundException;
@@ -29,9 +27,8 @@ import org.yaml.snakeyaml.Yaml;
 public class ConfigurationLoader {
 
 	public ConfigurationLoader(Logger log) throws NotDirectoryException, FileNotFoundException, DirectoryNotFoundException, NotFileException, EmptyFileException{
-
+		super();
 		this.getImports(log);
-		
 	}
 	
 	public void getImports(Logger log) throws NotDirectoryException, DirectoryNotFoundException, NotFileException, FileNotFoundException, EmptyFileException {
@@ -48,13 +45,14 @@ public class ConfigurationLoader {
 		
 		File defaultConfigurationDirectory = new File(defaultConfigurationPath);
 		
-		if(defaultConfigurationDirectory.exists() && defaultConfigurationDirectory.isDirectory()){
+		if(defaultConfigurationDirectory.exists() && defaultConfigurationDirectory.isDirectory() && defaultConfigurationDirectory.canRead()){
+			
 			defaultConfigurationDirectory = null;
 			
 			String defaultImportFilePath = new String(defaultConfigurationPath + "/" + StringRessource.DEFAULT_CONFIGURATION_IMPORT_FILE_DEFINER);
 			File defaultImportFile = new File(defaultImportFilePath);
 			
-			if(defaultImportFile.exists() && defaultImportFile.isFile()){
+			if(defaultImportFile.exists() && defaultImportFile.isFile() && defaultImportFile.canRead()){
 				
 			    InputStream ImportFileInput = new FileInputStream(defaultImportFile);
 				Yaml yaml = new Yaml();
@@ -63,8 +61,19 @@ public class ConfigurationLoader {
 			    if(data == null){
 			    	throw new EmptyFileException("File "+defaultImportFilePath+" is empty.");
 			    }else{
-			    	System.out.println(data);
-			    	System.out.println(((ArrayList)data.get("import")).get(1));
+			    	log.info("Start processing import config file.");
+			    	ImportProcessor importProcessor = new ImportProcessor((LinkedHashMap<String, Object>) data, log);
+			    	importProcessor.dataIsValid();
+			    	/*System.out.println(data);
+			    	
+			    	Object keys[] = ((LinkedHashMap<String, Object>)data).keySet().toArray();
+			    	
+			    	for (int i = 0; i < keys.length; i++) {
+			    		ArrayList imports = (ArrayList) ((LinkedHashMap)data).get(keys[i]);
+			    		for(int j = 0; j < imports.size(); j++){
+					    	System.out.println(((LinkedHashMap)imports.get(j)).keySet().toArray()[0]);
+			    		}
+					}*/
 			    }
 				
 			}else{

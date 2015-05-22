@@ -12,7 +12,7 @@
   </appender>
 
   <appender name="FILE-DEBUG" class="ch.qos.logback.core.FileAppender">
-    <file>logs/debug.log</file>
+    <file>/opt/bartelby/logs/debug.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>DEBUG</level>
       <onMatch>ACCEPT</onMatch>
@@ -25,7 +25,7 @@
   </appender>
   
   <appender name="FILE-ERROR" class="ch.qos.logback.core.FileAppender">
-    <file>logs/error.log</file>
+    <file>/opt/bartelby/logs/error.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>ERROR</level>
       <onMatch>ACCEPT</onMatch>
@@ -38,7 +38,7 @@
   </appender>
   
   <appender name="FILE-INFO" class="ch.qos.logback.core.FileAppender">
-    <file>logs/info.log</file>
+    <file>/opt/bartelby/logs/info.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>INFO</level>
       <onMatch>ACCEPT</onMatch>
@@ -51,7 +51,7 @@
   </appender>
   
   <appender name="FILE-TRACE" class="ch.qos.logback.core.FileAppender">
-    <file>logs/trace.log</file>
+    <file>/opt/bartelby/logs/trace.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>TRACE</level>
       <onMatch>ACCEPT</onMatch>
@@ -64,7 +64,7 @@
   </appender>
   
   <appender name="FILE-WARN" class="ch.qos.logback.core.FileAppender">
-    <file>logs/warning.log</file>
+    <file>/opt/bartelby/logs/warning.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>WARN</level>
       <onMatch>ACCEPT</onMatch>
