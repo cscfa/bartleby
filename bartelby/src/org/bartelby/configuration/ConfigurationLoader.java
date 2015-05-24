@@ -14,25 +14,31 @@ import java.util.Map;
 
 import org.bartelby.exception.DirectoryNotFoundException;
 import org.bartelby.exception.EmptyFileException;
+import org.bartelby.exception.MalformedYamlFile;
 import org.bartelby.exception.NotFileException;
 import org.bartelby.ressources.BooleanRessource;
 import org.bartelby.ressources.StringRessource;
+import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * @author vallance
  *
  */
 public class ConfigurationLoader {
+	
+	protected ArrayList<ImportFileElement> fileToImport = new ArrayList<ImportFileElement>();
 
-	public ConfigurationLoader(Logger log) throws NotDirectoryException, FileNotFoundException, DirectoryNotFoundException, NotFileException, EmptyFileException{
+	public ConfigurationLoader() throws NotDirectoryException, FileNotFoundException, DirectoryNotFoundException, NotFileException, EmptyFileException, MalformedYamlFile{
 		super();
-		this.getImports(log);
+		this.getImports();
 	}
 	
-	public void getImports(Logger log) throws NotDirectoryException, DirectoryNotFoundException, NotFileException, FileNotFoundException, EmptyFileException {
+	public void getImports() throws NotDirectoryException, DirectoryNotFoundException, NotFileException, FileNotFoundException, EmptyFileException, MalformedYamlFile {
 		
+		Logger log = (Logger)ServiceContainer.get("logger");
 		String defaultConfigurationPath = null;
 		
 		if(BooleanRessource.USE_DEFAULT_CONFIGURATION_RELATIVE_PATH){
@@ -62,18 +68,20 @@ public class ConfigurationLoader {
 			    	throw new EmptyFileException("File "+defaultImportFilePath+" is empty.");
 			    }else{
 			    	log.info("Start processing import config file.");
-			    	ImportProcessor importProcessor = new ImportProcessor((LinkedHashMap<String, Object>) data, log);
-			    	importProcessor.dataIsValid();
-			    	/*System.out.println(data);
+			    	ImportProcessor importProcessor = new ImportProcessor((LinkedHashMap<String, Object>) data);
 			    	
-			    	Object keys[] = ((LinkedHashMap<String, Object>)data).keySet().toArray();
-			    	
-			    	for (int i = 0; i < keys.length; i++) {
-			    		ArrayList imports = (ArrayList) ((LinkedHashMap)data).get(keys[i]);
-			    		for(int j = 0; j < imports.size(); j++){
-					    	System.out.println(((LinkedHashMap)imports.get(j)).keySet().toArray()[0]);
+			    	if(importProcessor.dataIsValid()){
+			    		try{
+			    			this.fileToImport = (ArrayList<ImportFileElement>) importProcessor.parse();
+			    		}catch(FileNotFoundException e){
+			    			throw new YAMLException("A required file does not exist or an error exist in import.yaml.", e);
+			    		}catch(DirectoryNotFoundException e){
+			    			throw new YAMLException("A required directory does not exist or an error exist in import.yaml.", e);
 			    		}
-					}*/
+			    	}else{
+			    		log.info("Starting fail. Import processpr return a malformed yaml file schema.");
+			    		throw new MalformedYamlFile("File import.yaml can't be parsed.");
+			    	}
 			    }
 				
 			}else{
@@ -91,6 +99,14 @@ public class ConfigurationLoader {
 				throw new DirectoryNotFoundException("Directory "+defaultConfigurationPath+" does not exist.");
 			}
 		}
+		
+	}
+	
+	public void loadResources(){
+		
+		YamlFileSwitchLoader yamlLoader = new YamlFileSwitchLoader();
+		
+		yamlLoader.loadFiles(this.fileToImport);
 		
 	}
 	

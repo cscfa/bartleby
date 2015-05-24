@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 
+import org.bartelby.exception.DirectoryNotFoundException;
 import org.bartelby.exception.PreconditionException;
+import org.bartelby.service.ServiceContainer;
+import org.slf4j.Logger;
 
 public class ImportDirectoryElement {
 
@@ -183,15 +186,31 @@ public class ImportDirectoryElement {
 		this.wasInit = wasInit;
 	}
 	
-	private void initPathDiscovering() {
-		ArrayList<String> tmpFileList = this.initPathDiscovering(this.getDirectory());
+	public void initPathDiscovering() throws PreconditionException, DirectoryNotFoundException {
+		File dir = this.getDirectory();
+		
+		if(dir == null && this.isRequired()){
+			throw new DirectoryNotFoundException("Directory "+this.path+" not exist.");
+		}else if(dir == null){
+			return;
+		}else{
+			
+			ArrayList<String> tmpFileList = this.initPathDiscovering(this.getDirectory());
+			
+			for (String file : tmpFileList) {
+				this.fileList.add(new ImportFileElement(file, this.isRequired()));
+			}
+		}
+		
+		this.setWasInit(true);
 	}
 	
-	private ArrayList<String> initPathDiscovering(File dir) {
+	private ArrayList<String> initPathDiscovering(File dir) throws PreconditionException {
 
 		ArrayList<String> tmpFileList = new ArrayList<String>();
 		
 		if(dir.exists() && dir.canRead() && dir.canExecute()){
+			Logger logger = (Logger)ServiceContainer.get("logger");
 			for (File containedFile : dir.listFiles()) {
 				if(containedFile.canRead() && containedFile.isFile()){
 					tmpFileList.add(containedFile.getAbsolutePath());

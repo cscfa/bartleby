@@ -1,5 +1,6 @@
 package org.bartelby.configuration;
 
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -7,19 +8,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
+import org.bartelby.console.ConsoleArgument;
+import org.bartelby.exception.DirectoryNotFoundException;
 import org.bartelby.exception.MalformedYamlFile;
+import org.bartelby.exception.PreconditionException;
 import org.bartelby.interfaces.Processor;
+import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 
 public class ImportProcessor implements Processor {
 
 	protected LinkedHashMap<String, Object> data;
-	private Logger logger;
 	
-	public ImportProcessor(LinkedHashMap<String, Object> yamlData, Logger log) {
+	public ImportProcessor(LinkedHashMap<String, Object> yamlData) {
 		super();
 		this.data = yamlData;
-		this.logger = log;
 	}
 	
 	/**
@@ -52,8 +55,9 @@ public class ImportProcessor implements Processor {
 			StringWriter esw = new StringWriter();
 			PrintWriter epw = new PrintWriter(esw);
 			e.printStackTrace(epw);
-			this.logger.error("Fail to import config file from imports.yaml\nStack trace : "+esw.toString());
-			this.logger.info("Fail to import config file from imports.yaml. See error log for stack trace.");
+			Logger logger = (Logger)ServiceContainer.get("logger");
+			logger.error("Fail to import config file from imports.yaml\nStack trace : "+esw.toString());
+			logger.info("Fail to import config file from imports.yaml. See error log for stack trace.");
 			return false;
 		}
 	}
@@ -76,6 +80,14 @@ public class ImportProcessor implements Processor {
 				throw new MalformedYamlFile("The import file is malformed in import content. See documentation.", e);
 			}
 		}else if(yamlData.containsKey("import")){
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("'import' element must be an ArrayList instance in import.yaml.");
+			}
+			throw new MalformedYamlFile("The import file is malformed at 'import'. See documentation.");
+		}else{
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("'import' element must exist in import.yaml.");
+			}
 			throw new MalformedYamlFile("The import file is malformed at 'import'. See documentation.");
 		}
 	}
@@ -98,6 +110,9 @@ public class ImportProcessor implements Processor {
 					throw new MalformedYamlFile("The import file is malformed in import content. See documentation.", e);
 				}
 			}else{
+				if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+					((Logger)ServiceContainer.get("logger")).debug("Each element of 'import' element must be an ArrayList instance in import.yaml.");
+				}
 				throw new MalformedYamlFile("The import file is malformed, wait for 'LinkedHashMap' into import. "+importElement.getClass()+" given . See documentation.");
 			}
 		}
@@ -119,8 +134,14 @@ public class ImportProcessor implements Processor {
 		defaultElementType.add("file");
 		
 		if(importElement.size() != 1){
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("The elements to import must be of only one type.");
+			}
 			throw new MalformedYamlFile("The import file is malformed in import element. See documentation.");
 		}else if(!defaultElementType.containsAll(importElement.keySet())){
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("The elements to import can only be of type directory or file.");
+			}
 			throw new MalformedYamlFile("The import file is malformed in import element. An element type is forbidden. See documentation.");
 		}else{
 			if(importElement.containsKey("directory")){
@@ -206,11 +227,108 @@ public class ImportProcessor implements Processor {
 		}
 	}
 
+	public Object parse() throws FileNotFoundException, DirectoryNotFoundException{
+		return this.parse(this.data);
+	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Object parse(Object data) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object parse(Object data) throws FileNotFoundException, DirectoryNotFoundException {
+		
+		ArrayList importElement = (ArrayList) ((LinkedHashMap<String, Object>)data).get("import");
+		
+		ArrayList<ImportFileElement> fileList = new ArrayList<ImportFileElement>();
+		
+		for (Object insideElement : importElement) {
+			LinkedHashMap element = (LinkedHashMap) insideElement;
+			
+			if(element.containsKey("directory")){
+				ImportDirectoryElement dir = this.parseDirectory((HashMap<String, Object>) element.get("directory"));
+				if(dir != null){
+					fileList.addAll(dir.getFileList());
+				}
+			}else if(element.containsKey("file")){
+				ImportFileElement file = this.parseFile((HashMap<String, Object>) element.get("file"));
+				if(file != null){
+					fileList.add(file);
+				}
+			}
+		}
+	
+		return fileList;
+	}
+	
+	private ImportDirectoryElement parseDirectory(HashMap<String, Object> element) throws FileNotFoundException, DirectoryNotFoundException{
+		
+		ImportDirectoryElement directory = null;
+		
+		if(element.containsKey("path")){
+			directory = new ImportDirectoryElement((String) element.get("path"));
+		}else{
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("A path error exist in import.yaml.");
+			}
+			return null;
+		}
+		
+		if(element.containsKey("required")){
+			directory.setRequired((Boolean) element.get("required"));
+		}
+		
+		if(element.containsKey("recursive")){
+			directory.setRequired((Boolean) element.get("recursive"));
+		}
+		
+		try {
+			directory.initPathDiscovering();
+		} catch (PreconditionException e) {
+			if(directory.isRequired()){
+				((Logger)ServiceContainer.get("logger")).error("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+					((Logger)ServiceContainer.get("logger")).debug("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				}
+				throw new FileNotFoundException();
+			}
+		} catch (DirectoryNotFoundException e) {
+			if(directory.isRequired()){
+				((Logger)ServiceContainer.get("logger")).error("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+					((Logger)ServiceContainer.get("logger")).debug("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				}
+				
+				throw new DirectoryNotFoundException(e);
+			}
+		}
+
+		return directory;
+	}
+	
+	private ImportFileElement parseFile(HashMap<String, Object> element) throws FileNotFoundException{
+		
+		ImportFileElement file = null;
+		
+		if(element.containsKey("path")){
+			file = new ImportFileElement((String) element.get("path"));
+		}else{
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("A path error exist in import.yaml.");
+			}
+			return null;
+		}
+		
+		if(element.containsKey("required")){
+			file.setRequired((Boolean) element.get("required"));
+		}
+		
+		if(!file.fileExist() && file.isRequired()){
+			((Logger)ServiceContainer.get("logger")).error("File(s) is(are) required but not exist. Path : "+file.getPath());
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("File(s) is(are) required but not exist. Path : "+file.getPath());
+			}
+			throw new FileNotFoundException();
+		}
+		
+		return file;
 	}
 
 	@Override
