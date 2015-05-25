@@ -6,13 +6,16 @@ package org.bartelby.configuration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.bartelby.console.ConsoleArgument;
 import org.bartelby.exception.DirectoryNotFoundException;
+import org.bartelby.exception.DuplicateParameterEntryException;
 import org.bartelby.exception.EmptyFileException;
 import org.bartelby.exception.MalformedYamlFile;
 import org.bartelby.exception.NotFileException;
@@ -68,6 +71,9 @@ public class ConfigurationLoader {
 			    	throw new EmptyFileException("File "+defaultImportFilePath+" is empty.");
 			    }else{
 			    	log.info("Start processing import config file.");
+					if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+						log.debug("Start processing import config file.");
+					}
 			    	ImportProcessor importProcessor = new ImportProcessor((LinkedHashMap<String, Object>) data);
 			    	
 			    	if(importProcessor.dataIsValid()){
@@ -84,6 +90,9 @@ public class ConfigurationLoader {
 			    	}
 			    }
 				
+			    try {
+					ImportFileInput.close();
+				} catch (IOException e) {}
 			}else{
 				if(defaultImportFile.exists()){
 					throw new NotFileException(defaultImportFilePath+" is not a file.");
@@ -102,11 +111,37 @@ public class ConfigurationLoader {
 		
 	}
 	
-	public void loadResources(){
+	public void loadResources() throws DuplicateParameterEntryException, MalformedYamlFile{
+		Logger log = (Logger)ServiceContainer.get("logger");
+    	log.info("Start processing import config file.");
+		if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+			log.debug("Start loading files from import config file.");
+		}
 		
 		YamlFileSwitchLoader yamlLoader = new YamlFileSwitchLoader();
 		
-		yamlLoader.loadFiles(this.fileToImport);
+		try {
+			yamlLoader.loadFiles(this.fileToImport);
+		} catch (FileNotFoundException e) {
+			((Logger)ServiceContainer.get("logger")).error("A file is not found.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("A file is not found.");
+			}
+		} catch (DuplicateParameterEntryException e) {
+			((Logger)ServiceContainer.get("logger")).error("Duplicate parameter key.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("Duplicate parameter key.");
+			}
+			
+			throw new DuplicateParameterEntryException("A yaml file contain errors.", e);
+		} catch (MalformedYamlFile e) {
+			((Logger)ServiceContainer.get("logger")).error("A yaml file contain errors.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+				((Logger)ServiceContainer.get("logger")).debug("A yaml file contain errors.");
+			}
+			
+			throw new MalformedYamlFile("A yaml file contain errors.", e);
+		}
 		
 	}
 	

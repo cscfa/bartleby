@@ -10,6 +10,10 @@ public class ConfigurationParameters {
 		super();
 	}
 	
+	static public boolean exist(Object key) {
+		return ConfigurationParameters.mappedValues.containsKey(key);
+	}
+	
 	static public void put(String key, Object value) {
 		ConfigurationParameters.mappedValues.put(key, value);
 	}
