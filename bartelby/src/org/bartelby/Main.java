@@ -21,6 +21,7 @@ import org.bartelby.exception.NotFileException;
 import org.bartelby.inputServer.BartelbyServerListener;
 import org.bartelby.logger.Logger;
 import org.bartelby.service.ServiceContainer;
+import org.bartelby.unixServer.BartelbyUnixServerListener;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -79,6 +80,12 @@ public class Main {
 			}else{
 				System.out.println("error");
 			}
+			
+			BartelbyUnixServerListener unixServer = new BartelbyUnixServerListener();
+			unixServer.setDaemon(true);
+			unixServer.start();
+			
+			
 		} catch (DuplicateParameterEntryException | MalformedYamlFile e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -93,7 +100,5 @@ public class Main {
 			((org.slf4j.Logger)ServiceContainer.get("logger")).error("Starting fail");
 			return;
 		}
-		
 	}
-
 }

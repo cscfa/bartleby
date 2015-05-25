@@ -98,7 +98,7 @@ public class BartelbyServerListener extends Thread {
 					}else if(serverStatus.equals("waiting")){
 						try {
 							while(((String)((ConcurrentHashMap)ConfigurationParameters.get("server")).get("status")).equals("waiting")){
-								this.wait(100);
+								Thread.currentThread().sleep(100);
 							}
 						} catch (InterruptedException e1) {}
 					}else if(serverStatus.equals("stop")){
