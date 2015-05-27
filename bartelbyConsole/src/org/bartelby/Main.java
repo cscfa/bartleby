@@ -27,8 +27,7 @@ public class Main {
             sock.connect(new AFUNIXSocketAddress(socketFile));
         } catch (AFUNIXSocketException e) {
             System.out.println("Cannot connect to server. Have you started it?");
-            System.out.flush();
-            throw e;
+            System.exit(0);
         }
         System.out.println("Connected");
 

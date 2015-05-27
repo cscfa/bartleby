@@ -34,6 +34,12 @@ public class BartelbyUnixServerListener extends Thread {
 	        while (!Thread.interrupted()) {
 	        	try{
 	        		this.sock = server.accept();
+	        		
+	        		((Logger) ServiceContainer.get("logger")).info(this.sock.toString().hashCode() + " Unix client connection.");
+        			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
+        				((Logger) ServiceContainer.get("logger")).debug(this.sock.toString().hashCode() + " Unix client connection.");
+        			}
+        			
 	        		(new BartelbyUnixServer(this.sock)).start();
 	        	}catch(SocketTimeoutException e){}
 	        	

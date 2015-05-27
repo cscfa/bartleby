@@ -32,7 +32,6 @@ public class HTTPResponse {
 		DataOutputStream output = this.request.getOutput();
 		if(output != null){
 			output.writeBytes(result + responseString);
-			output.close();
 		}
 		
 	}

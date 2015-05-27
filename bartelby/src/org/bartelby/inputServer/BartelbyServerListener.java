@@ -55,7 +55,6 @@ public class BartelbyServerListener extends Thread {
 			return;
 		}
 
-		int loop = 1;
 		Socket soc = null;
 		int soTimeout = 1000;
 		
@@ -84,11 +83,10 @@ public class BartelbyServerListener extends Thread {
 			return;
 		}
 		
-		while(loop > 0){
+		while(((String)((ConcurrentHashMap)ConfigurationParameters.get("server")).get("status")).equals("started")){
 			try {
 				soc = socket.accept();
-				(new BartelbyServer(soc)).start();
-				loop --;
+				(new Thread(new BartelbyServer(soc))).start();
 			}catch (IOException e) {
 
 				if(e instanceof SocketTimeoutException){

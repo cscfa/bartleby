@@ -25,6 +25,7 @@ public class BartelbyUnixServer extends Thread {
 	protected static final String CLOSE = "close";
 	
 	private Socket client;
+	private ConsoleUser user;
 	private DataInputStream is;
 	private DataOutputStream os;
 	
@@ -57,6 +58,10 @@ public class BartelbyUnixServer extends Thread {
 							loop = consoleDiscover.exit();
 						}else if(command.equals("status")){
 							loop = consoleDiscover.status();
+						}else if(command.equals("show:commands")){
+							loop = consoleDiscover.listCommand();
+						}else if(command.equals("help")){
+							loop = consoleDiscover.help();
 						}
 					}
 				}else{
@@ -72,6 +77,18 @@ public class BartelbyUnixServer extends Thread {
 			((Logger) ServiceContainer.get("logger")).error("Unix socket server fail to start.");
 			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
 				((Logger) ServiceContainer.get("logger")).debug("Unix socket server fail to start.");
+			}
+		} catch(Exception e){
+			if(e instanceof StringIndexOutOfBoundsException){
+				
+        		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection closed.");
+    			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
+    				((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection closed.");
+    			}
+    			
+				try {
+					this.client.close();
+				} catch (IOException e1) {}
 			}
 		}
 
@@ -109,6 +126,11 @@ public class BartelbyUnixServer extends Thread {
 				this.os.write("close".getBytes());
 				this.os.flush();
 				this.client.close();
+				
+        		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection closed.");
+    			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
+    				((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection closed.");
+    			}
 			}catch(IOException e){}
 		}else if(output.equals("input")){
 			try{
@@ -146,11 +168,32 @@ public class BartelbyUnixServer extends Thread {
 			}
 
 			if(currentUser.getPassword().equals(sb.toString())){
+				
+				this.user = currentUser;
+				
+        		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection granted with user : " + user);
+    			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
+    				((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection granted with user : " + user);
+    			}
+				
 				return true;
 			}
         }
 		
+		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection failed with user : " + user);
+		if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
+			((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection failed with user : " + user);
+		}
+		
 		return false;
+	}
+
+	public ConsoleUser getUser() {
+		return user;
+	}
+
+	public Socket getClient() {
+		return client;
 	}
 
 }
