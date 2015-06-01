@@ -24,6 +24,7 @@ public class YamlFileSwitchLoader {
 		ParameterProcessor param = new ParameterProcessor();
 		ServerProcessor server = new ServerProcessor();
 		UserProcessor user = new UserProcessor();
+		RouterProcessor router = new RouterProcessor();
 		Yaml yaml = new Yaml();
 		
 		for (ImportFileElement importFileElement : fileToImport) {
@@ -39,12 +40,7 @@ public class YamlFileSwitchLoader {
 								throw new DuplicateParameterEntryException("Duplicate parameter key in file "+importFileElement.getPath(), e);
 							}
 						}else{
-							((Logger)ServiceContainer.get("logger")).warn("File "+importFileElement.getPath()+" contain parameters loading error.");
-							if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-								((Logger)ServiceContainer.get("logger")).debug("File "+importFileElement.getPath()+" contain parameters loading error.");
-							}
-							
-							throw new MalformedYamlFile("File "+importFileElement.getPath()+" contain parameters loading error.");
+							this.reportError(importFileElement, "parameters");
 						}
 					}
 					
@@ -56,11 +52,7 @@ public class YamlFileSwitchLoader {
 								throw new DuplicateParameterEntryException("Duplicate server key in file "+importFileElement.getPath(), e);
 							}
 						}else{
-							((Logger)ServiceContainer.get("logger")).warn("File "+importFileElement.getPath()+" contain server loading error.");
-							if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-								((Logger)ServiceContainer.get("logger")).debug("File "+importFileElement.getPath()+" contain server loading error.");
-							}
-							throw new MalformedYamlFile("File "+importFileElement.getPath()+" contain server loading error.");
+							this.reportError(importFileElement, "server");
 						}
 					}
 					
@@ -72,11 +64,19 @@ public class YamlFileSwitchLoader {
 								throw new DuplicateParameterEntryException("Duplicate user key in file "+importFileElement.getPath(), e);
 							}
 						}else{
-							((Logger)ServiceContainer.get("logger")).warn("File "+importFileElement.getPath()+" contain user loading error.");
-							if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-								((Logger)ServiceContainer.get("logger")).debug("File "+importFileElement.getPath()+" contain user loading error.");
+							this.reportError(importFileElement, "user");
+						}
+					}
+					
+					if(data.containsKey("router")){
+						if(router.dataIsValid(data.get("router"))){
+							try {
+								router.parse(data.get("router"));
+							} catch (DuplicateParameterEntryException e) {
+								throw new DuplicateParameterEntryException("Duplicate router key in file "+importFileElement.getPath(), e);
 							}
-							throw new MalformedYamlFile("File "+importFileElement.getPath()+" contain user loading error.");
+						}else{
+							this.reportError(importFileElement, "router");
 						}
 					}
 				} catch (FileNotFoundException e) {
@@ -95,6 +95,14 @@ public class YamlFileSwitchLoader {
 			}
 		}
 		
+	}
+	
+	public void reportError(ImportFileElement file, String type) throws MalformedYamlFile{
+		((Logger)ServiceContainer.get("logger")).warn("File "+file.getPath()+" contain "+type+" loading error.");
+		if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+			((Logger)ServiceContainer.get("logger")).debug("File "+file.getPath()+" contain "+type+" loading error.");
+		}
+		throw new MalformedYamlFile("File "+file.getPath()+" contain "+type+" loading error.");
 	}
 
 }

@@ -3,6 +3,10 @@ package org.bartelby.inputServer;
 import java.net.Socket;
 
 import org.bartelby.console.ConsoleArgument;
+import org.bartelby.insideRouter.HTTPResourceContainer;
+import org.bartelby.insideRouter.Router;
+import org.bartelby.insideRouter.Transient;
+import org.bartelby.insideRouter.TransientCarrier;
 import org.bartelby.service.ServiceContainer;
 import org.bartelby.stat.BartelbySniffer;
 import org.slf4j.Logger;
@@ -22,16 +26,34 @@ public class BartelbyServer implements Runnable {
 		BartelbySniffer.addProcess();
 		
 		try {
-
-			HTTPRequest request = new HTTPRequest(this.connectedClient);
 			
-			((Logger) ServiceContainer.get("logger")).info("Client connection."+request.getClientIp() + ":" + request.getClientPort());
+			HTTPResourceContainer container = new HTTPResourceContainer(connectedClient);
+			
+			((Logger) ServiceContainer.get("logger")).info("Client connection."+container.getRequest().getClientIp() + ":" + container.getRequest().getClientPort());
 			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug("\tClient connection."+request.getClientIp() + ":" + request.getClientPort());
+				((Logger) ServiceContainer.get("logger")).debug("\tClient connection."+container.getRequest().getClientIp() + ":" + container.getRequest().getClientPort());
 			}
 
-			HTTPResponse response = new HTTPResponse(request);
-			response.sendResponse("ok");
+			Router router = new Router(container);
+			
+			TransientCarrier routerTransients = router.process();
+			
+			Transient lastTransient = routerTransients.getLast();
+			
+			if(lastTransient != null){
+				container.getResponse().setResponseCode(lastTransient.getCode(), lastTransient.getCodeStatus());
+				container.getResponse().setContentType(lastTransient.getContentType());
+				container.getResponse().sendResponse(lastTransient.getResponseText());
+			}else{
+				((Logger) ServiceContainer.get("logger")).error("TransientCarrier do not contain response.");
+				if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
+					((Logger) ServiceContainer.get("logger")).debug("\tTransientCarrier do not contain response.");
+				}
+				
+				container.getResponse().setResponseCode(500, "Internal server error");
+				container.getResponse().setContentType("text/plain");
+				container.getResponse().sendResponse("Error 500 : Internal server error");
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
