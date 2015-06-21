@@ -13,6 +13,7 @@ import org.bartelby.exception.DirectoryNotFoundException;
 import org.bartelby.exception.MalformedYamlFile;
 import org.bartelby.exception.PreconditionException;
 import org.bartelby.interfaces.Processor;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 
@@ -55,7 +56,7 @@ public class ImportProcessor implements Processor {
 			StringWriter esw = new StringWriter();
 			PrintWriter epw = new PrintWriter(esw);
 			e.printStackTrace(epw);
-			Logger logger = (Logger)ServiceContainer.get("logger");
+			Logger logger = (Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER);
 			logger.error("Fail to import config file from imports.yaml\nStack trace : "+esw.toString());
 			logger.info("Fail to import config file from imports.yaml. See error log for stack trace.");
 			return false;
@@ -80,13 +81,13 @@ public class ImportProcessor implements Processor {
 				throw new MalformedYamlFile("The import file is malformed in import content. See documentation.", e);
 			}
 		}else if(yamlData.containsKey("import")){
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("'import' element must be an ArrayList instance in import.yaml.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("'import' element must be an ArrayList instance in import.yaml.");
 			}
 			throw new MalformedYamlFile("The import file is malformed at 'import'. See documentation.");
 		}else{
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("'import' element must exist in import.yaml.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("'import' element must exist in import.yaml.");
 			}
 			throw new MalformedYamlFile("The import file is malformed at 'import'. See documentation.");
 		}
@@ -110,8 +111,8 @@ public class ImportProcessor implements Processor {
 					throw new MalformedYamlFile("The import file is malformed in import content. See documentation.", e);
 				}
 			}else{
-				if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-					((Logger)ServiceContainer.get("logger")).debug("Each element of 'import' element must be an ArrayList instance in import.yaml.");
+				if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+					((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Each element of 'import' element must be an ArrayList instance in import.yaml.");
 				}
 				throw new MalformedYamlFile("The import file is malformed, wait for 'LinkedHashMap' into import. "+importElement.getClass()+" given . See documentation.");
 			}
@@ -134,13 +135,13 @@ public class ImportProcessor implements Processor {
 		defaultElementType.add("file");
 		
 		if(importElement.size() != 1){
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("The elements to import must be of only one type.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("The elements to import must be of only one type.");
 			}
 			throw new MalformedYamlFile("The import file is malformed in import element. See documentation.");
 		}else if(!defaultElementType.containsAll(importElement.keySet())){
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("The elements to import can only be of type directory or file.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("The elements to import can only be of type directory or file.");
 			}
 			throw new MalformedYamlFile("The import file is malformed in import element. An element type is forbidden. See documentation.");
 		}else{
@@ -265,8 +266,8 @@ public class ImportProcessor implements Processor {
 		if(element.containsKey("path")){
 			directory = new ImportDirectoryElement((String) element.get("path"));
 		}else{
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("A path error exist in import.yaml.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("A path error exist in import.yaml.");
 			}
 			return null;
 		}
@@ -283,17 +284,17 @@ public class ImportProcessor implements Processor {
 			directory.initPathDiscovering();
 		} catch (PreconditionException e) {
 			if(directory.isRequired()){
-				((Logger)ServiceContainer.get("logger")).error("File(s) is(are) required but not exist. Path : "+directory.getPath());
-				if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-					((Logger)ServiceContainer.get("logger")).debug("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+					((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("File(s) is(are) required but not exist. Path : "+directory.getPath());
 				}
 				throw new FileNotFoundException();
 			}
 		} catch (DirectoryNotFoundException e) {
 			if(directory.isRequired()){
-				((Logger)ServiceContainer.get("logger")).error("File(s) is(are) required but not exist. Path : "+directory.getPath());
-				if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-					((Logger)ServiceContainer.get("logger")).debug("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("File(s) is(are) required but not exist. Path : "+directory.getPath());
+				if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+					((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("File(s) is(are) required but not exist. Path : "+directory.getPath());
 				}
 				
 				throw new DirectoryNotFoundException(e);
@@ -310,8 +311,8 @@ public class ImportProcessor implements Processor {
 		if(element.containsKey("path")){
 			file = new ImportFileElement((String) element.get("path"));
 		}else{
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("A path error exist in import.yaml.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("A path error exist in import.yaml.");
 			}
 			return null;
 		}
@@ -321,9 +322,9 @@ public class ImportProcessor implements Processor {
 		}
 		
 		if(!file.fileExist() && file.isRequired()){
-			((Logger)ServiceContainer.get("logger")).error("File(s) is(are) required but not exist. Path : "+file.getPath());
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("File(s) is(are) required but not exist. Path : "+file.getPath());
+			((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("File(s) is(are) required but not exist. Path : "+file.getPath());
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("File(s) is(are) required but not exist. Path : "+file.getPath());
 			}
 			throw new FileNotFoundException();
 		}

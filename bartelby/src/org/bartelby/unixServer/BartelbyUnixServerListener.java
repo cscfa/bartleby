@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bartelby.configuration.ConfigurationParameters;
 import org.bartelby.console.ConsoleArgument;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.newsclub.net.unix.AFUNIXServerSocket;
 import org.newsclub.net.unix.AFUNIXSocketAddress;
@@ -35,9 +36,9 @@ public class BartelbyUnixServerListener extends Thread {
 	        	try{
 	        		this.sock = server.accept();
 	        		
-	        		((Logger) ServiceContainer.get("logger")).info(this.sock.toString().hashCode() + " Unix client connection.");
-        			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-        				((Logger) ServiceContainer.get("logger")).debug(this.sock.toString().hashCode() + " Unix client connection.");
+	        		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info(this.sock.toString().hashCode() + " Unix client connection.");
+        			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+        				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug(this.sock.toString().hashCode() + " Unix client connection.");
         			}
         			
 	        		(new BartelbyUnixServer(this.sock)).start();
@@ -46,21 +47,21 @@ public class BartelbyUnixServerListener extends Thread {
 	        }
         }catch(IOException e){
 
-			((Logger) ServiceContainer.get("logger")).error("Unix socket server fail to start.");
-			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug("Unix socket server fail to start.");
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("Unix socket server fail to start.");
+			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Unix socket server fail to start.");
 			}
 
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			((Logger) ServiceContainer.get("logger")).trace(sw.toString());
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).trace(sw.toString());
 			pw.close();
 			try {
 				sw.close();
 			} catch (IOException e1) {
 			}
-			((ConcurrentHashMap)ConfigurationParameters.get("server")).put("status", "stop");
+			((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).put(StringRessource.DEFAULT_STATUS_SPACE, StringRessource.DEFAULT_STATUS_SPACE_STOP);
 			return;
 
         }

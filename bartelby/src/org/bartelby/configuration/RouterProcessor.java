@@ -1,6 +1,10 @@
 package org.bartelby.configuration;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+
 import org.bartelby.exception.DuplicateParameterEntryException;
+import org.bartelby.interfaces.Component;
 import org.bartelby.interfaces.Processor;
 
 public class RouterProcessor implements Processor {
@@ -11,7 +15,31 @@ public class RouterProcessor implements Processor {
 
 	@Override
 	public boolean dataIsValid(Object data) {
-		// TODO Auto-generated method stub
+
+		if(data instanceof ArrayList){
+			for(int i = 0;i < ((ArrayList)data).size();i++){
+				if(((ArrayList) data).get(i) instanceof String){
+					try{
+						Class tmpClass = Class.forName((String) ((ArrayList) data).get(i), false, this.getClass().getClassLoader());
+						Constructor tmpConst = tmpClass.getConstructor();
+						Object tmpObj = tmpConst.newInstance();
+						
+						if(tmpObj instanceof Component){
+							continue;
+						}else{
+							return false;
+						}
+					}catch(Exception e){
+						return false;
+					}
+				}else{
+					return false;
+				}
+			}
+		}else{
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -19,7 +47,13 @@ public class RouterProcessor implements Processor {
 	public Object parse(Object data) throws DuplicateParameterEntryException {
 		// TODO Auto-generated method stub
 		
-		System.out.println(data.getClass());
+		for(int i = 0;i < ((ArrayList)data).size();i++){
+			try{
+				Class tmpClass = Class.forName((String) ((ArrayList) data).get(i));
+				Constructor tmpConst = tmpClass.getConstructor();
+				ConfigurationRouter.add((Component) tmpConst.newInstance());
+			}catch(Exception e){}
+		}
 		
 		return null;
 	}

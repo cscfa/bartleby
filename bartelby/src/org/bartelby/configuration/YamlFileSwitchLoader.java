@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bartelby.console.ConsoleArgument;
 import org.bartelby.exception.DuplicateParameterEntryException;
 import org.bartelby.exception.MalformedYamlFile;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -80,17 +81,17 @@ public class YamlFileSwitchLoader {
 						}
 					}
 				} catch (FileNotFoundException e) {
-					((Logger)ServiceContainer.get("logger")).error("File "+importFileElement.getPath()+" is not found.");
-					if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-						((Logger)ServiceContainer.get("logger")).debug("File "+importFileElement.getPath()+" is not found.");
+					((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("File "+importFileElement.getPath()+" is not found.");
+					if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+						((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("File "+importFileElement.getPath()+" is not found.");
 					}
 					
 					throw new FileNotFoundException("File "+importFileElement.getPath()+" is not found.");
 				}
 			}else{
-				((Logger)ServiceContainer.get("logger")).warn("File "+importFileElement.getPath()+" is not a yaml file pattern.");
-				if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-					((Logger)ServiceContainer.get("logger")).debug("File "+importFileElement.getPath()+" is not a yaml file pattern.");
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).warn("File "+importFileElement.getPath()+" is not a yaml file pattern.");
+				if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+					((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("File "+importFileElement.getPath()+" is not a yaml file pattern.");
 				}
 			}
 		}
@@ -98,9 +99,9 @@ public class YamlFileSwitchLoader {
 	}
 	
 	public void reportError(ImportFileElement file, String type) throws MalformedYamlFile{
-		((Logger)ServiceContainer.get("logger")).warn("File "+file.getPath()+" contain "+type+" loading error.");
-		if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-			((Logger)ServiceContainer.get("logger")).debug("File "+file.getPath()+" contain "+type+" loading error.");
+		((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).warn("File "+file.getPath()+" contain "+type+" loading error.");
+		if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+			((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("File "+file.getPath()+" contain "+type+" loading error.");
 		}
 		throw new MalformedYamlFile("File "+file.getPath()+" contain "+type+" loading error.");
 	}

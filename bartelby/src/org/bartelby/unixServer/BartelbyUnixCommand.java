@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bartelby.configuration.ConfigurationParameters;
 import org.bartelby.console.ConsoleArgument;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 
@@ -19,13 +20,13 @@ public class BartelbyUnixCommand {
 	public boolean stop(){
 
 		if(this.server.getUser().getRole().equals("admin")){
-			((Logger) ServiceContainer.get("logger")).info(this.server.getClient().toString().hashCode() + " Unix client request stop.");
-			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug(this.server.getClient().toString().hashCode() + " Unix client request stop.");
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info(this.server.getClient().toString().hashCode() + " Unix client request stop.");
+			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug(this.server.getClient().toString().hashCode() + " Unix client request stop.");
 			}
 			
 			this.server.send(BartelbyUnixServer.OUTPUT, "Server stopping.\n");
-			((ConcurrentHashMap)ConfigurationParameters.get("server")).put("status", "stop");
+			((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).put(StringRessource.DEFAULT_STATUS_SPACE, StringRessource.DEFAULT_STATUS_SPACE_STOP);
 			this.server.send(BartelbyUnixServer.OUTPUT, "bye\n");
 			
 			return false;
@@ -42,12 +43,12 @@ public class BartelbyUnixCommand {
 	}
 	
 	public Boolean status(){
-		((Logger) ServiceContainer.get("logger")).info(this.server.getClient().toString().hashCode() + " Unix client request status.");
-		if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-			((Logger) ServiceContainer.get("logger")).debug(this.server.getClient().toString().hashCode() + " Unix client request status.");
+		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info(this.server.getClient().toString().hashCode() + " Unix client request status.");
+		if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug(this.server.getClient().toString().hashCode() + " Unix client request status.");
 		}
 		
-		this.server.send(BartelbyUnixServer.OUTPUT, ((String)((ConcurrentHashMap)ConfigurationParameters.get("server")).get("status"))+"\n");
+		this.server.send(BartelbyUnixServer.OUTPUT, ((String)((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).get(StringRessource.DEFAULT_STATUS_SPACE))+"\n");
 		return true;
 	}
 	

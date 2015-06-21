@@ -41,7 +41,7 @@ public class ConfigurationLoader {
 	
 	public void getImports() throws NotDirectoryException, DirectoryNotFoundException, NotFileException, FileNotFoundException, EmptyFileException, MalformedYamlFile {
 		
-		Logger log = (Logger)ServiceContainer.get("logger");
+		Logger log = (Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER);
 		String defaultConfigurationPath = null;
 		
 		if(BooleanRessource.USE_DEFAULT_CONFIGURATION_RELATIVE_PATH){
@@ -71,7 +71,7 @@ public class ConfigurationLoader {
 			    	throw new EmptyFileException("File "+defaultImportFilePath+" is empty.");
 			    }else{
 			    	log.info("Start processing import config file.");
-					if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+					if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
 						log.debug("Start processing import config file.");
 					}
 			    	ImportProcessor importProcessor = new ImportProcessor((LinkedHashMap<String, Object>) data);
@@ -112,9 +112,9 @@ public class ConfigurationLoader {
 	}
 	
 	public void loadResources() throws DuplicateParameterEntryException, MalformedYamlFile{
-		Logger log = (Logger)ServiceContainer.get("logger");
+		Logger log = (Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER);
     	log.info("Start processing import config file.");
-		if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
+		if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
 			log.debug("Start loading files from import config file.");
 		}
 		
@@ -123,21 +123,21 @@ public class ConfigurationLoader {
 		try {
 			yamlLoader.loadFiles(this.fileToImport);
 		} catch (FileNotFoundException e) {
-			((Logger)ServiceContainer.get("logger")).error("A file is not found.");
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("A file is not found.");
+			((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("A file is not found.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("A file is not found.");
 			}
 		} catch (DuplicateParameterEntryException e) {
-			((Logger)ServiceContainer.get("logger")).error("Duplicate parameter key.");
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("Duplicate parameter key.");
+			((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("Duplicate parameter key.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Duplicate parameter key.");
 			}
 			
 			throw new DuplicateParameterEntryException("A yaml file contain errors.", e);
 		} catch (MalformedYamlFile e) {
-			((Logger)ServiceContainer.get("logger")).error("A yaml file contain errors.");
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((Logger)ServiceContainer.get("logger")).debug("A yaml file contain errors.");
+			((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("A yaml file contain errors.");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("A yaml file contain errors.");
 			}
 			
 			throw new MalformedYamlFile("A yaml file contain errors.", e);

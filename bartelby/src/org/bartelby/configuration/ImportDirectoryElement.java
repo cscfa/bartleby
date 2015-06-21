@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.bartelby.exception.DirectoryNotFoundException;
 import org.bartelby.exception.PreconditionException;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 
@@ -210,7 +211,7 @@ public class ImportDirectoryElement {
 		ArrayList<String> tmpFileList = new ArrayList<String>();
 		
 		if(dir.exists() && dir.canRead() && dir.canExecute()){
-			Logger logger = (Logger)ServiceContainer.get("logger");
+			Logger logger = (Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER);
 			for (File containedFile : dir.listFiles()) {
 				if(containedFile.canRead() && containedFile.isFile()){
 					tmpFileList.add(containedFile.getAbsolutePath());

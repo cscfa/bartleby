@@ -9,5 +9,18 @@ public interface StringRessource {
 
 	/* ---- Logger configuration ---- */
 	public static final String DEFAULT_LOGGER_CONFIGURATION_FILE_NAME = "logback.xml";
+
+	/* ---- Configuration parameter registration ---- */
+	public static final String DEFAULT_SERVER_SPACE = "server";
+
+	/* ---- Configuration service registration ---- */
+	public static final String SERVICE_LOGGER = "logger";
+	public static final String SERVICE_CONSOLE = "console";
+
+	/* ---- Configuration status registration ---- */
+	public static final String DEFAULT_STATUS_SPACE = "status";
+	public static final String DEFAULT_STATUS_SPACE_STARTED = "started";
+	public static final String DEFAULT_STATUS_SPACE_WAITING = "waiting";
+	public static final String DEFAULT_STATUS_SPACE_STOP = "stop";
 	
 }

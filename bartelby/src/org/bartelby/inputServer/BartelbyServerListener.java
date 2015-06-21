@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bartelby.configuration.ConfigurationParameters;
 import org.bartelby.configuration.ConfigurationServer;
 import org.bartelby.console.ConsoleArgument;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 
@@ -26,9 +27,9 @@ public class BartelbyServerListener extends Thread {
 	public void run() {
 		// TODO Auto-generated method stub
 
-		((Logger) ServiceContainer.get("logger")).info("Start server socket on port "+ (Integer) ConfigurationServer.get("port") + ".");
-		if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-			((Logger) ServiceContainer.get("logger")).debug("Start server socket on port "+ (Integer) ConfigurationServer.get("port") + ".");
+		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Start server socket on port "+ (Integer) ConfigurationServer.get("port") + ".");
+		if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Start server socket on port "+ (Integer) ConfigurationServer.get("port") + ".");
 		}
 		
 		ServerSocket socket = null;
@@ -36,22 +37,22 @@ public class BartelbyServerListener extends Thread {
 		try {
 			socket = new ServerSocket((Integer) ConfigurationServer.get("port"));
 		} catch (IOException e) {
-			((Logger) ServiceContainer.get("logger")).info("Starting server fail.");
-			((Logger) ServiceContainer.get("logger")).error("Starting fail");
-			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug("Starting server fail.");
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Starting server fail.");
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("Starting fail");
+			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Starting server fail.");
 			}
 
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			((Logger) ServiceContainer.get("logger")).trace(sw.toString());
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).trace(sw.toString());
 			pw.close();
 			try {
 				sw.close();
 			} catch (IOException e1) {
 			}
-			((ConcurrentHashMap)ConfigurationParameters.get("server")).put("status", "stop");
+			((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).put(StringRessource.DEFAULT_STATUS_SPACE, StringRessource.DEFAULT_STATUS_SPACE_STOP);
 			return;
 		}
 
@@ -69,37 +70,37 @@ public class BartelbyServerListener extends Thread {
 		try {
 			socket.setSoTimeout(soTimeout);
 			
-			((Logger) ServiceContainer.get("logger")).info("Server started.");
-			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug("\tServer started.");
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Server started.");
+			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\tServer started.");
 			}
 			
 		} catch (SocketException e2) {
-			((Logger) ServiceContainer.get("logger")).info("Starting server fail.");
-			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug("\tStarting server fail.");
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Starting server fail.");
+			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\tStarting server fail.");
 			}
-			((ConcurrentHashMap)ConfigurationParameters.get("server")).put("status", "stop");
+			((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).put(StringRessource.DEFAULT_STATUS_SPACE, StringRessource.DEFAULT_STATUS_SPACE_STOP);
 			return;
 		}
 		
-		while(((String)((ConcurrentHashMap)ConfigurationParameters.get("server")).get("status")).equals("started")){
+		while(((String)((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).get(StringRessource.DEFAULT_STATUS_SPACE)).equals(StringRessource.DEFAULT_STATUS_SPACE_STARTED)){
 			try {
 				soc = socket.accept();
 				(new Thread(new BartelbyServer(soc))).start();
 			}catch (IOException e) {
 
 				if(e instanceof SocketTimeoutException){
-					String serverStatus = (String)((ConcurrentHashMap)ConfigurationParameters.get("server")).get("status");
-					if(serverStatus.equals("started")){
+					String serverStatus = (String)((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).get(StringRessource.DEFAULT_STATUS_SPACE);
+					if(serverStatus.equals(StringRessource.DEFAULT_STATUS_SPACE_STARTED)){
 						//none
-					}else if(serverStatus.equals("waiting")){
+					}else if(serverStatus.equals(StringRessource.DEFAULT_STATUS_SPACE_WAITING)){
 						try {
-							while(((String)((ConcurrentHashMap)ConfigurationParameters.get("server")).get("status")).equals("waiting")){
+							while(((String)((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).get(StringRessource.DEFAULT_STATUS_SPACE)).equals(StringRessource.DEFAULT_STATUS_SPACE_WAITING)){
 								Thread.currentThread().sleep(100);
 							}
 						} catch (InterruptedException e1) {}
-					}else if(serverStatus.equals("stop")){
+					}else if(serverStatus.equals(StringRessource.DEFAULT_STATUS_SPACE_STOP)){
 						return;
 					}
 					
@@ -107,7 +108,7 @@ public class BartelbyServerListener extends Thread {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					e.printStackTrace(pw);
-					((Logger) ServiceContainer.get("logger")).trace(sw.toString());
+					((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).trace(sw.toString());
 					pw.close();
 					try {
 						sw.close();

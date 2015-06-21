@@ -15,6 +15,7 @@ import org.bartelby.configuration.ConfigurationServer;
 import org.bartelby.configuration.ConfigurationUser;
 import org.bartelby.console.ConsoleArgument;
 import org.bartelby.console.ConsoleUser;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 
@@ -74,16 +75,16 @@ public class BartelbyUnixServer extends Thread {
 			this.send("close", null);
 
 		} catch (IOException e) {
-			((Logger) ServiceContainer.get("logger")).error("Unix socket server fail to start.");
-			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug("Unix socket server fail to start.");
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("Unix socket server fail to start.");
+			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Unix socket server fail to start.");
 			}
 		} catch(Exception e){
 			if(e instanceof StringIndexOutOfBoundsException){
 				
-        		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection closed.");
-    			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-    				((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection closed.");
+        		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info(this.client.toString().hashCode() + " Unix client connection closed.");
+    			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+    				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug(this.client.toString().hashCode() + " Unix client connection closed.");
     			}
     			
 				try {
@@ -127,9 +128,9 @@ public class BartelbyUnixServer extends Thread {
 				this.os.flush();
 				this.client.close();
 				
-        		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection closed.");
-    			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-    				((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection closed.");
+        		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info(this.client.toString().hashCode() + " Unix client connection closed.");
+    			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption("debug")) {
+    				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug(this.client.toString().hashCode() + " Unix client connection closed.");
     			}
 			}catch(IOException e){}
 		}else if(output.equals("input")){
@@ -171,18 +172,18 @@ public class BartelbyUnixServer extends Thread {
 				
 				this.user = currentUser;
 				
-        		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection granted with user : " + user);
-    			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-    				((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection granted with user : " + user);
+        		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info(this.client.toString().hashCode() + " Unix client connection granted with user : " + user);
+    			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption("debug")) {
+    				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug(this.client.toString().hashCode() + " Unix client connection granted with user : " + user);
     			}
 				
 				return true;
 			}
         }
 		
-		((Logger) ServiceContainer.get("logger")).info(this.client.toString().hashCode() + " Unix client connection failed with user : " + user);
-		if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-			((Logger) ServiceContainer.get("logger")).debug(this.client.toString().hashCode() + " Unix client connection failed with user : " + user);
+		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info(this.client.toString().hashCode() + " Unix client connection failed with user : " + user);
+		if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption("debug")) {
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug(this.client.toString().hashCode() + " Unix client connection failed with user : " + user);
 		}
 		
 		return false;

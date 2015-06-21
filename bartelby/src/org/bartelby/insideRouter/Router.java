@@ -2,6 +2,8 @@ package org.bartelby.insideRouter;
 
 import java.util.ArrayDeque;
 
+import org.bartelby.component.SecurityComponent;
+import org.bartelby.configuration.ConfigurationRouter;
 import org.bartelby.interfaces.Component;
 
 public class Router {
@@ -13,6 +15,8 @@ public class Router {
 	public Router(HTTPResourceContainer container) {
 		
 		this.container = container;
+		
+		this.componentQueue = (ArrayDeque<Component>) ConfigurationRouter.getQueueClone();
 		
 	}
 	
@@ -27,7 +31,7 @@ public class Router {
 				this.componentQueue.clear();
 			}
 		}
-		
+
 		return this.transientCarrier;
 		
 	}

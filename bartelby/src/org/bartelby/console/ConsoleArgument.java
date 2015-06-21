@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 public class ConsoleArgument {
 	
+	public static final String ARG_DEBUG = "debug";
+	
 	private HashMap<String, Object> option = new HashMap<String, Object>();
 	private ArrayList<String> argument = new ArrayList<String>();
 

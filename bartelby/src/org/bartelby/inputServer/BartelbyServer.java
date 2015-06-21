@@ -7,6 +7,7 @@ import org.bartelby.insideRouter.HTTPResourceContainer;
 import org.bartelby.insideRouter.Router;
 import org.bartelby.insideRouter.Transient;
 import org.bartelby.insideRouter.TransientCarrier;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.bartelby.stat.BartelbySniffer;
 import org.slf4j.Logger;
@@ -29,9 +30,9 @@ public class BartelbyServer implements Runnable {
 			
 			HTTPResourceContainer container = new HTTPResourceContainer(connectedClient);
 			
-			((Logger) ServiceContainer.get("logger")).info("Client connection."+container.getRequest().getClientIp() + ":" + container.getRequest().getClientPort());
-			if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-				((Logger) ServiceContainer.get("logger")).debug("\tClient connection."+container.getRequest().getClientIp() + ":" + container.getRequest().getClientPort());
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Client connection."+container.getRequest().getClientIp() + ":" + container.getRequest().getClientPort());
+			if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\tClient connection."+container.getRequest().getClientIp() + ":" + container.getRequest().getClientPort());
 			}
 
 			Router router = new Router(container);
@@ -45,9 +46,9 @@ public class BartelbyServer implements Runnable {
 				container.getResponse().setContentType(lastTransient.getContentType());
 				container.getResponse().sendResponse(lastTransient.getResponseText());
 			}else{
-				((Logger) ServiceContainer.get("logger")).error("TransientCarrier do not contain response.");
-				if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-					((Logger) ServiceContainer.get("logger")).debug("\tTransientCarrier do not contain response.");
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("TransientCarrier do not contain response.");
+				if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+					((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\tTransientCarrier do not contain response.");
 				}
 				
 				container.getResponse().setResponseCode(500, "Internal server error");
@@ -61,9 +62,9 @@ public class BartelbyServer implements Runnable {
 
 		BartelbySniffer.rmProcess();
 		Long executionTime = (System.currentTimeMillis() - this.time);
-		((Logger) ServiceContainer.get("logger")).info("Response send in "+executionTime+"ms");
-		if ((boolean) ((ConsoleArgument) ServiceContainer.get("console")).getOption("debug")) {
-			((Logger) ServiceContainer.get("logger")).debug("\tResponse send in "+executionTime+"ms");
+		((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Response send in "+executionTime+"ms");
+		if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+			((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\tResponse send in "+executionTime+"ms");
 		}
 	}
 

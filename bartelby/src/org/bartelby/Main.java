@@ -5,13 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.NotDirectoryException;
-import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bartelby.configuration.ConfigurationLoader;
 import org.bartelby.configuration.ConfigurationParameters;
-import org.bartelby.configuration.ConfigurationServer;
-import org.bartelby.configuration.ConfigurationUser;
 import org.bartelby.console.ConsoleArgument;
 import org.bartelby.exception.DirectoryNotFoundException;
 import org.bartelby.exception.DuplicateParameterEntryException;
@@ -20,6 +17,7 @@ import org.bartelby.exception.MalformedYamlFile;
 import org.bartelby.exception.NotFileException;
 import org.bartelby.inputServer.BartelbyServerListener;
 import org.bartelby.logger.Logger;
+import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.bartelby.unixServer.BartelbyUnixServerListener;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -35,8 +33,8 @@ public class Main {
 		args = new String[1];
 		args[0] = "--debug";
 		
-		ConfigurationParameters.put("server", (new ConcurrentHashMap<String, Object>()));
-		((ConcurrentHashMap)ConfigurationParameters.get("server")).put("status", "started");
+		ConfigurationParameters.put(StringRessource.DEFAULT_SERVER_SPACE, (new ConcurrentHashMap<String, Object>()));
+		((ConcurrentHashMap)ConfigurationParameters.get(StringRessource.DEFAULT_SERVER_SPACE)).put(StringRessource.DEFAULT_STATUS_SPACE, StringRessource.DEFAULT_STATUS_SPACE_STARTED);
 		
 		ConfigurationLoader conf = null;
 		
@@ -44,11 +42,11 @@ public class Main {
 			Logger logger = new Logger();
 			ConsoleArgument console = new ConsoleArgument(args);
 
-			ServiceContainer.set("logger", logger.getLogger());
-			ServiceContainer.set("console", console);
+			ServiceContainer.set(StringRessource.SERVICE_LOGGER, logger.getLogger());
+			ServiceContainer.set(StringRessource.SERVICE_CONSOLE, console);
 			
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((org.slf4j.Logger)ServiceContainer.get("logger")).debug("\n\n\n--- Starting ---");
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\n\n\n--- Starting ---");
 			}
 			
 			conf = new ConfigurationLoader();
@@ -60,14 +58,14 @@ public class Main {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			((org.slf4j.Logger)ServiceContainer.get("logger")).trace(sw.toString());
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((org.slf4j.Logger)ServiceContainer.get("logger")).debug("Starting fail.\n"+sw.toString());
+			((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).trace(sw.toString());
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Starting fail.\n"+sw.toString());
 			}
 			pw.close();
 			try {sw.close();} catch (IOException e1) {}
-			((org.slf4j.Logger)ServiceContainer.get("logger")).info("Starting fail");
-			((org.slf4j.Logger)ServiceContainer.get("logger")).error("Starting fail");
+			((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Starting fail");
+			((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("Starting fail");
 			return;
 		}
 		
@@ -90,14 +88,14 @@ public class Main {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			((org.slf4j.Logger)ServiceContainer.get("logger")).trace(sw.toString());
-			if((boolean) ((ConsoleArgument)ServiceContainer.get("console")).getOption("debug")){
-				((org.slf4j.Logger)ServiceContainer.get("logger")).debug("Starting fail.\n"+sw.toString());
+			((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).trace(sw.toString());
+			if((boolean) ((ConsoleArgument)ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)){
+				((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("Starting fail.\n"+sw.toString());
 			}
 			pw.close();
 			try {sw.close();} catch (IOException e1) {}
-			((org.slf4j.Logger)ServiceContainer.get("logger")).info("Starting fail");
-			((org.slf4j.Logger)ServiceContainer.get("logger")).error("Starting fail");
+			((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).info("Starting fail");
+			((org.slf4j.Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("Starting fail");
 			return;
 		}
 	}

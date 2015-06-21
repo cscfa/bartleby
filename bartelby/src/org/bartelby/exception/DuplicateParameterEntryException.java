@@ -2,6 +2,8 @@ package org.bartelby.exception;
 
 public class DuplicateParameterEntryException extends Exception {
 
+	private static final long serialVersionUID = 6421888944949124396L;
+
 	public DuplicateParameterEntryException() {
 		// TODO Auto-generated constructor stub
 	}
