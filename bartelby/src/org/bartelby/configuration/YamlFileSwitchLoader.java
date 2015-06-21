@@ -26,6 +26,7 @@ public class YamlFileSwitchLoader {
 		ServerProcessor server = new ServerProcessor();
 		UserProcessor user = new UserProcessor();
 		RouterProcessor router = new RouterProcessor();
+		SecurityProcessor security = new SecurityProcessor();
 		Yaml yaml = new Yaml();
 		
 		for (ImportFileElement importFileElement : fileToImport) {
@@ -78,6 +79,18 @@ public class YamlFileSwitchLoader {
 							}
 						}else{
 							this.reportError(importFileElement, "router");
+						}
+					}
+					
+					if(data.containsKey("security")){
+						if(security.dataIsValid(data.get("security"))){
+							try {
+								security.parse(data.get("security"));
+							} catch (DuplicateParameterEntryException e) {
+								throw new DuplicateParameterEntryException("Duplicate router key in file "+importFileElement.getPath(), e);
+							}
+						}else{
+							this.reportError(importFileElement, "security");
 						}
 					}
 				} catch (FileNotFoundException e) {

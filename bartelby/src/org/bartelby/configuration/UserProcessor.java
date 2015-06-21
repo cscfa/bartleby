@@ -5,6 +5,9 @@ import java.util.LinkedHashMap;
 import org.bartelby.console.ConsoleUser;
 import org.bartelby.exception.DuplicateParameterEntryException;
 import org.bartelby.interfaces.Processor;
+import org.bartelby.ressources.StringRessource;
+import org.bartelby.service.ServiceContainer;
+import org.slf4j.Logger;
 
 public class UserProcessor implements Processor {
 
@@ -53,6 +56,7 @@ public class UserProcessor implements Processor {
 		Object[] keys = ((LinkedHashMap) data).keySet().toArray();
 		
 		for (Object key : keys) {
+			((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug((String) key);
 			if(ConfigurationUser.exist(key)){
 				throw new DuplicateParameterEntryException("Duplicate user key "+key.toString()+".");
 			}else{

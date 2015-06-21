@@ -156,7 +156,7 @@ public class BartelbyUnixServer extends Thread {
 		this.send(BartelbyUnixServer.OUTPUT, "password : ");
 		
 		String password = (String) this.send(BartelbyUnixServer.INPUT, null);
-
+		
         if(ConfigurationUser.exist(user)){
         	ConsoleUser currentUser = (ConsoleUser) ConfigurationUser.get(user);
 

@@ -17,10 +17,26 @@ import org.bartelby.ressources.StringRessource;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
 
+/**
+ * Import processor.
+ * 
+ * Processor for import directories and files.
+ * 
+ * @author vallance
+ *
+ */
 public class ImportProcessor implements Processor {
 
 	protected LinkedHashMap<String, Object> data;
 	
+	/**
+	 * Default constructor.
+	 * 
+	 * Default import processor constructor
+	 * with data parameters.
+	 * 
+	 * @param yamlData	The yaml data to process.
+	 */
 	public ImportProcessor(LinkedHashMap<String, Object> yamlData) {
 		super();
 		this.data = yamlData;
@@ -228,6 +244,16 @@ public class ImportProcessor implements Processor {
 		}
 	}
 
+	/**
+	 * Default parse method.
+	 * 
+	 * Parse default yaml data given by the
+	 * default constructor.
+	 * 
+	 * @return								the file list to import.
+	 * @throws FileNotFoundException		If the file to import doesn't exist.
+	 * @throws DirectoryNotFoundException	If the directory to import desn't exist.
+	 */
 	public Object parse() throws FileNotFoundException, DirectoryNotFoundException{
 		return this.parse(this.data);
 	}
