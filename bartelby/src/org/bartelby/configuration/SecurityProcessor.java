@@ -84,6 +84,60 @@ public class SecurityProcessor implements Processor {
 				}
 			}
 
+			if(((LinkedHashMap) data).containsKey("userAccess") && ((LinkedHashMap) data).get("userAccess").getClass().toString().equals(LinkedHashMap.class.toString())){
+				LinkedHashMap<String, Object> userAccess = (LinkedHashMap<String, Object>) ((LinkedHashMap) data).get("userAccess");
+
+				if(userAccess.containsKey("default")){
+					Object accessDefault = userAccess.get("default");
+					if(accessDefault.getClass().toString().equals(String.class.toString())){
+						if(accessDefault.equals("grant") || accessDefault.equals("deny")){
+							
+							Object[] keys = userAccess.keySet().toArray();
+							
+							for (Object key : keys) {
+								if(key.toString().equals("default")){
+									continue;
+								}else{
+									Object user = userAccess.get(key.toString());
+									
+									if(user.getClass().toString().equals(LinkedHashMap.class.toString())){
+										user = (LinkedHashMap<String, Object>)userAccess.get(key);
+										if(((LinkedHashMap<String, Object>)user).containsKey("ip")){
+											if(((LinkedHashMap<String, Object>)user).get("ip").getClass().toString().equals(ArrayList.class.toString())){
+												ArrayList ipList = (ArrayList) ((LinkedHashMap<String, Object>)user).get("ip");
+												
+												for (Object ip : ipList) {
+													if(!ip.getClass().toString().equals(String.class.toString()) || !ip.toString().matches("(\\d{1,3}.){3}\\d{1,3}")){
+														return false;
+													}
+												}
+											}else{
+												return false;
+											}
+										}
+										
+										if(((LinkedHashMap<String, Object>)user).containsKey("key") && ((LinkedHashMap<String, Object>)user).get("key").getClass().toString().equals(String.class.toString())){
+											//nothing
+										}else{
+											return false;
+										}
+									}else{
+										return false;
+									}
+								}
+							}
+							
+						}else{
+							return false;
+						}
+					}else{
+						return false;
+					}
+				}else{
+					return false;
+				}
+			}
+
 		}else{
 			return false;
 		}
@@ -107,6 +161,13 @@ public class SecurityProcessor implements Processor {
 				throw new DuplicateParameterEntryException("Duplicate security key ipAccess.");
 			}else{
 				ConfigurationSecurity.put("ipAccess", ((LinkedHashMap<String, Object>)data).get("ipAccess"));
+			}
+		}
+		if(((LinkedHashMap) data).containsKey("userAccess")){
+			if(ConfigurationSecurity.exist("userAccess")){
+				throw new DuplicateParameterEntryException("Duplicate security key userAccess.");
+			}else{
+				ConfigurationSecurity.put("userAccess", ((LinkedHashMap<String, Object>)data).get("userAccess"));
 			}
 		}
 		

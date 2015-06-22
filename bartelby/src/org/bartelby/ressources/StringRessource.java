@@ -22,5 +22,9 @@ public interface StringRessource {
 	public static final String DEFAULT_STATUS_SPACE_STARTED = "started";
 	public static final String DEFAULT_STATUS_SPACE_WAITING = "waiting";
 	public static final String DEFAULT_STATUS_SPACE_STOP = "stop";
+
+	/* ---- Configuration security registration ---- */
+	public static final String DEFAULT_SECURITY_USER_URL_PARAM = "username";
+	public static final String DEFAULT_SECURITY_USER_KEY_URL_PARAM = "userkey";
 	
 }

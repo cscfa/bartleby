@@ -56,7 +56,6 @@ public class UserProcessor implements Processor {
 		Object[] keys = ((LinkedHashMap) data).keySet().toArray();
 		
 		for (Object key : keys) {
-			((Logger)ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug((String) key);
 			if(ConfigurationUser.exist(key)){
 				throw new DuplicateParameterEntryException("Duplicate user key "+key.toString()+".");
 			}else{

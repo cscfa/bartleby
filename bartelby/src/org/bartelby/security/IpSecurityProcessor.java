@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 
 import org.bartelby.configuration.ConfigurationSecurity;
 import org.bartelby.insideRouter.HTTPResourceContainer;
-import org.bartelby.ressources.StringRessource;
 
 /**
  * IP security validator.

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class HTTPRequest {
@@ -17,8 +18,10 @@ public class HTTPRequest {
 	
 	protected String method;
 	protected String route;
-	
+	protected String uri;
+
 	protected ArrayList<String> request = new ArrayList<String>();
+	protected HashMap<String, String> urlParam = new HashMap<String, String>();
 	
 	public HTTPRequest(Socket client) throws IOException {
 		
@@ -34,11 +37,32 @@ public class HTTPRequest {
 
 		StringTokenizer tokenizer = new StringTokenizer(headerLine);
 		this.method = tokenizer.nextToken();
-		this.route = tokenizer.nextToken();
+		this.uri = tokenizer.nextToken();
+		this.route = this.uri.substring(0, this.uri.indexOf('?'));
+		
+		String[] getParams = this.uri.substring(this.uri.indexOf('?') + 1).split("&");
+		for (String param : getParams) {
+			if(param.indexOf('=') == -1){
+				this.urlParam.put(param, "1");
+			}else{
+			    StringTokenizer paramTokenizer = new StringTokenizer(param, "=");
+			    String key = paramTokenizer.nextToken();
+			    String value = paramTokenizer.nextToken();
+				this.urlParam.put(key, value);
+			}
+		}
 
 		while (inFromClient.ready()) {
 			request.add(inFromClient.readLine());
 		}
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public HashMap<String, String> getUrlParam() {
+		return urlParam;
 	}
 
 	public DataOutputStream getOutput() {
@@ -71,8 +95,10 @@ public class HTTPRequest {
 
 	@Override
 	public String toString() {
-		return "HTTPRequest [ip=" + clientIp + ", port=" + clientPort + ", method="
-				+ method + ", route=" + route + ", request=" + request + "]";
+		return "HTTPRequest [client=" + client + ", clientIp=" + clientIp
+				+ ", clientPort=" + clientPort + ", method=" + method
+				+ ", route=" + route + ", uri=" + uri + ", request=" + request
+				+ ", getParam=" + urlParam + "]";
 	}
 
 }

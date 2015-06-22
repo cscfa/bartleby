@@ -57,6 +57,10 @@ public class Transient {
 	public void setMessages(HashMap<String, Object> messages) {
 		this.messages = messages;
 	}
+
+	public void addMessages(String key, Object messages) {
+		this.messages.put(key, messages);
+	}
 	
 	public void setContentType(String contentType){
 		this.messages.put("content-type", contentType);
