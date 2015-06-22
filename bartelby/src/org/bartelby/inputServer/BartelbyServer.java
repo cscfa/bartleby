@@ -41,14 +41,23 @@ public class BartelbyServer implements Runnable {
 			
 			Transient lastTransient = routerTransients.getLast();
 			
-			if(lastTransient != null){
+			if(lastTransient != null && lastTransient.getCode() >= 200){
 				container.getResponse().setResponseCode(lastTransient.getCode(), lastTransient.getCodeStatus());
 				container.getResponse().setContentType(lastTransient.getContentType());
 				container.getResponse().sendResponse(lastTransient.getResponseText());
-			}else{
+			}else if(lastTransient == null){
 				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("TransientCarrier do not contain response.");
 				if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
 					((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\tTransientCarrier do not contain response.");
+				}
+				
+				container.getResponse().setResponseCode(500, "Internal server error");
+				container.getResponse().setContentType("text/plain");
+				container.getResponse().sendResponse("Error 500 : Internal server error");
+			}else if(lastTransient.getCode() < 200){
+				((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).error("TransientCarrier respond continue.");
+				if ((boolean) ((ConsoleArgument) ServiceContainer.get(StringRessource.SERVICE_CONSOLE)).getOption(ConsoleArgument.ARG_DEBUG)) {
+					((Logger) ServiceContainer.get(StringRessource.SERVICE_LOGGER)).debug("\tTransientCarrier respond continue.");
 				}
 				
 				container.getResponse().setResponseCode(500, "Internal server error");
