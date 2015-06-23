@@ -38,7 +38,12 @@ public class HTTPRequest {
 		StringTokenizer tokenizer = new StringTokenizer(headerLine);
 		this.method = tokenizer.nextToken();
 		this.uri = tokenizer.nextToken();
-		this.route = this.uri.substring(0, this.uri.indexOf('?'));
+		
+		if(this.uri.indexOf('?') >= 0){
+			this.route = this.uri.substring(0, this.uri.indexOf('?'));
+		}else{
+			this.route = this.uri;
+		}
 		
 		String[] getParams = this.uri.substring(this.uri.indexOf('?') + 1).split("&");
 		for (String param : getParams) {
