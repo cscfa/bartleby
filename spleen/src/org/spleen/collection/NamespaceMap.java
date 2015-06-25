@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.spleen.config.SpleenConfigurator;
 import org.spleen.threading.CacheOutRemover;
-import org.spleen.tool.Sizeof;
 import org.spleen.type.CacheObject;
 import org.spleen.type.Sizeable;
 
@@ -14,7 +13,6 @@ public class NamespaceMap implements Sizeable {
 	protected ConcurrentHashMap<String, CacheObject> namespaces;
 	protected SpleenConfigurator config;
 	protected LinkedList<String> cacheObjectOrder;
-	@SuppressWarnings("unused")
 	private CacheOutRemover cacheOutRemover;
 	private Thread cacheOutThread;
 	private double size = 0;
@@ -64,7 +62,6 @@ public class NamespaceMap implements Sizeable {
 
 	@Override
 	protected void finalize() throws Throwable {
-		// TODO Auto-generated method stub
 		this.cacheOutRemover.setStop(true);
 		super.finalize();
 	}
@@ -79,7 +76,6 @@ public class NamespaceMap implements Sizeable {
 
 	@Override
 	public double getSize() {
-		// TODO Auto-generated method stub
 		return this.size;
 	}
 	

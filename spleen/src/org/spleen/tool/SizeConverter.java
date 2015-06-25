@@ -9,7 +9,7 @@ public class SizeConverter {
 	public static final double E = 1125899906842624d;
 	
 	public SizeConverter() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 	
 	public static double convert(double value, double multiplicator){

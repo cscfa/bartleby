@@ -1,7 +1,6 @@
 package org.spleen.threading;
 
 import org.spleen.collection.NamespaceMap;
-import org.spleen.tool.Sizeof;
 import org.spleen.type.CacheObject;
 
 public class CacheOutRemover implements Runnable {

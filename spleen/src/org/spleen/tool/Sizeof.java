@@ -46,7 +46,7 @@ public class Sizeof {
                 return 8;
         }
 
-        private static int size_inst(Class c)
+        private static int size_inst(Class<?> c)
         {
                 Field flds[] = c.getDeclaredFields();
                 int sz = 0;
@@ -62,14 +62,14 @@ public class Sizeof {
                 if (c.getSuperclass() != null)
                         sz += size_inst(c.getSuperclass());
 
-                Class cv[] = c.getInterfaces();
+                Class<?> cv[] = c.getInterfaces();
                 for (int i = 0; i < cv.length; i++)
                         sz += size_inst(cv[i]);
 
                 return sz;
         }
 
-        private static int size_prim(Class t)
+        private static int size_prim(Class<?> t)
         { 
                 if (t == Boolean.TYPE)
                         return 1;
@@ -93,9 +93,9 @@ public class Sizeof {
                         return SZ_REF;
         }
 
-        private static int size_arr(Object obj, Class c)
+        private static int size_arr(Object obj, Class<?> c)
         {
-                Class ct = c.getComponentType();
+                Class<?> ct = c.getComponentType();
                 int len = Array.getLength(obj);
 
                 if (ct.isPrimitive()) {
@@ -108,7 +108,7 @@ public class Sizeof {
                                 Object obj2 = Array.get(obj, i);
                                 if (obj2 == null)
                                         continue;
-                                Class c2 = obj2.getClass();
+                                Class<?> c2 = obj2.getClass();
                                 if (!c2.isArray())
                                         continue;
                                 sz += size_arr(obj2, c2);
@@ -122,7 +122,7 @@ public class Sizeof {
                 if (obj == null)
                         return 0;
 
-                Class c = obj.getClass();
+                Class<?> c = obj.getClass();
 
                 if (c.isArray())
                         return size_arr(obj, c);

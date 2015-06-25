@@ -8,7 +8,7 @@ public class SpleenConfigurator {
 	protected int maxCount = 100;
 	
 	public SpleenConfigurator() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
 	public long getRemoverSheduleTime() {
