@@ -18,5 +18,7 @@
 	<classpathentry kind="lib" path="/media/vallance/2ea6c518-d070-4da8-92eb-669334c41f59/bartelby/bartleby/library/logBack/logback-1.1.3/logback-access-1.1.3.jar"/>
 	<classpathentry kind="lib" path="/media/vallance/2ea6c518-d070-4da8-92eb-669334c41f59/bartelby/bartleby/library/junixsocket/junixsocket-rmi-1.3.jar"/>
 	<classpathentry kind="lib" path="/media/vallance/2ea6c518-d070-4da8-92eb-669334c41f59/bartelby/bartleby/library/junixsocket/junixsocket-1.3.jar"/>
+	<classpathentry kind="lib" path="/media/vallance/2ea6c518-d070-4da8-92eb-669334c41f59/bartelby/bartleby/library/commons-collections4-4.0/commons-collections4-4.0.jar"/>
+	<classpathentry kind="lib" path="/media/vallance/2ea6c518-d070-4da8-92eb-669334c41f59/bartelby/bartleby/library/spleen/SpleenCacheLibrary.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

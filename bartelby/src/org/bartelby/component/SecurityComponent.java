@@ -1,5 +1,6 @@
 package org.bartelby.component;
 
+import org.bartelby.cache.CacheService;
 import org.bartelby.configuration.ConfigurationSecurity;
 import org.bartelby.configuration.ConfigurationServer;
 import org.bartelby.console.ConsoleArgument;
@@ -14,6 +15,8 @@ import org.bartelby.security.MaskSecurityProcessor;
 import org.bartelby.security.UserSecurityProcessor;
 import org.bartelby.service.ServiceContainer;
 import org.slf4j.Logger;
+import org.spleen.type.CacheObject;
+import org.spleen.type.SimpleCacheObject;
 
 public class SecurityComponent implements Component {
 	
@@ -43,6 +46,15 @@ public class SecurityComponent implements Component {
 	@Override
 	public Transient process(HTTPResourceContainer container,
 			TransientCarrier transients) {
+		
+		String connectionIdentifyer = "";
+		connectionIdentifyer += container.getRequest().getClientIp() + ";";
+		connectionIdentifyer += container.getRequest().getUrlParam().get(StringRessource.DEFAULT_SECURITY_USER_URL_PARAM) + ";";
+		connectionIdentifyer += container.getRequest().getUrlParam().get(StringRessource.DEFAULT_SECURITY_USER_KEY_URL_PARAM) + ";";
+		
+		if(CacheService.get(this.NAME).get(connectionIdentifyer) != null){
+			return (Transient) CacheService.get(this.NAME).get(connectionIdentifyer).getCacheObject();
+		}
 
 		Transient result = new Transient();
 		// IP checking
@@ -139,6 +151,9 @@ public class SecurityComponent implements Component {
 		result.setCodeStatus("Continue");
 		result.setContentType("text/plain");
 		result.setResponseText("100 : Continue");
+		
+		CacheObject cacheResult = new SimpleCacheObject(result);
+		CacheService.get(this.NAME).add(connectionIdentifyer, cacheResult);
 		
 		return result;
 	}

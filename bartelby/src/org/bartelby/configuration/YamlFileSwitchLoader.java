@@ -27,6 +27,7 @@ public class YamlFileSwitchLoader {
 		UserProcessor user = new UserProcessor();
 		RouterProcessor router = new RouterProcessor();
 		SecurityProcessor security = new SecurityProcessor();
+		CacheProcessor cache = new CacheProcessor();
 		Yaml yaml = new Yaml();
 		
 		for (ImportFileElement importFileElement : fileToImport) {
@@ -91,6 +92,18 @@ public class YamlFileSwitchLoader {
 							}
 						}else{
 							this.reportError(importFileElement, "security");
+						}
+					}
+					
+					if(data.containsKey("cache")){
+						if(cache.dataIsValid(data.get("cache"))){
+							try {
+								cache.parse(data.get("cache"));
+							} catch (DuplicateParameterEntryException e) {
+								throw new DuplicateParameterEntryException("Duplicate cache key in file "+importFileElement.getPath(), e);
+							}
+						}else{
+							this.reportError(importFileElement, "cache");
 						}
 					}
 				} catch (FileNotFoundException e) {

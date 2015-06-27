@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.nio.file.NotDirectoryException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bartelby.cache.CacheService;
 import org.bartelby.configuration.ConfigurationLoader;
 import org.bartelby.configuration.ConfigurationParameters;
 import org.bartelby.console.ConsoleArgument;
@@ -30,7 +31,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
+
 		args = new String[1];
 		args[0] = "--debug";
 		
@@ -72,7 +73,7 @@ public class Main {
 		
 		try {
 			conf.loadResources();
-
+			
 			BartelbyServerListener server = new BartelbyServerListener();
 			if(server.validServerConfiguration()){
 				server.start();
